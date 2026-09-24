@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quản lý Tổ chuyên môn</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ============ MÀN HÌNH ĐĂNG NHẬP ============ -->
+<div id="loginScreen" class="login-wrap">
+  <div class="login-card">
+    <div class="login-brand">
+      <div class="seal">TCM</div>
+      <div>
+        <h1>Quản lý Tổ chuyên môn</h1>
+        <p id="loginSchool">Trường THPT …</p>
+      </div>
+    </div>
+    <form id="loginForm" autocomplete="on">
+      <label class="fld">
+        <span>Tên đăng nhập</span>
+        <input type="text" id="loginUser" required autocomplete="username" placeholder="tài khoản do tổ trưởng cấp">
+      </label>
+      <label class="fld">
+        <span>Mật khẩu</span>
+        <input type="password" id="loginPass" required autocomplete="current-password" placeholder="••••••••">
+      </label>
+      <div id="loginErr" class="form-err" hidden></div>
+      <button class="btn btn-primary btn-block" type="submit">Đăng nhập</button>
+    </form>
+    <p class="login-hint">Lần đầu chạy: tài khoản <b>admin</b> / mật khẩu <b>admin@123</b> — đăng nhập rồi đổi ngay mật khẩu.</p>
+    <p class="login-foot">Lương Khánh Tường · ĐT/Zalo 0916780807</p>
+  </div>
+</div>
+
+<!-- ============ ỨNG DỤNG ============ -->
+<div id="app" class="app" hidden>
+  <aside class="sidebar" id="sidebar">
+    <div class="side-head">
+      <div class="seal">TCM</div>
+      <div class="side-title">
+        <strong id="sideTo">Tổ chuyên môn</strong>
+        <span id="sideTruong">Trường THPT …</span>
+      </div>
+    </div>
+    <nav class="side-nav" id="sideNav"></nav>
+    <div class="side-foot">
+      <div class="who">
+        <strong id="whoName">—</strong>
+        <span id="whoRole">—</span>
+      </div>
+      <button class="btn btn-ghost btn-sm" id="btnLogout">Thoát</button>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <button class="icon-btn" id="btnMenu" aria-label="Mở menu">☰</button>
+      <div class="crumb">
+        <span class="crumb-eyebrow" id="crumbEyebrow">Hồ sơ chuyên môn</span>
+        <h2 id="crumbTitle">Tổng quan</h2>
+      </div>
+      <div class="topbar-right">
+        <span class="pill" id="pillNamHoc">Năm học —</span>
+        <span class="pill pill-mode" id="pillMode">Cục bộ</span>
+      </div>
+    </header>
+    <main class="page" id="page"></main>
+    <footer class="app-foot">
+      Phần mềm Quản lý Tổ chuyên môn · Lương Khánh Tường · ĐT/Zalo 0916780807
+    </footer>
+  </div>
+</div>
+
+<!-- Lớp phủ menu di động -->
+<div class="scrim" id="scrim" hidden></div>
+
+<!-- Hộp thoại dùng chung -->
+<div class="modal-wrap" id="modalWrap" hidden>
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <h3 id="modalTitle">Tiêu đề</h3>
+      <button class="icon-btn" id="modalClose" aria-label="Đóng">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-foot" id="modalFoot"></div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<!-- Thư viện đọc/ghi Excel -->
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+<!-- Firebase (chỉ dùng khi bật chế độ nhiều người) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<script src="js/config.js"></script>
+<script src="js/core.js"></script>
+<script src="js/export.js"></script>
+<script src="js/pages-hoso.js"></script>
+<script src="js/pages-chatluong.js"></script>
+<script src="js/pages-quantri.js"></script>
+<script src="js/pages-truong.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
