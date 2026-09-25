@@ -29,11 +29,11 @@ window.APP_CONFIG = {
     so: "SỞ GIÁO DỤC VÀ ĐÀO TẠO AN GIANG",
     truong: "TRƯỜNG THPT BÌNH THẠNH ĐÔNG",
     to: "TỔ TOÁN",
-    namHoc: "",            // để trống thì phần mềm tự tính theo ngày hệ thống
+    namHoc: "2026-2027",    // Đã cập nhật năm học hiện tại
     diaDanh: "An Giang",
     hieuTruong: "",
     toTruong: "",
-    thuKy: "",
+    thuKy: "Lương Khánh Tường", // Cập nhật tên theo biểu mẫu
     nguongYeu: 5.0,
     hanBaoCao: 25,       // ngày hằng tháng phải nộp báo cáo
     hanGiaoAn: 5         // nộp giáo án trước tiết dạy bao nhiêu ngày
