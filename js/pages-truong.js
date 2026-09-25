@@ -330,3 +330,116 @@ Pages.tonghop = {
     }
   }
 };
+
+/* ================= BIÊN BẢN HỌP CHUYÊN MÔN TOÀN TRƯỜNG ================= */
+Pages.bienbantruong = {
+  eyebrow: "Toàn trường", title: "Biên bản họp chuyên môn",
+  render(el){
+    if (!Auth.capTruong()) { el.innerHTML = UI.trong("Mục này dành cho Ban Giám hiệu và thư ký hội đồng", ""); return; }
+    const thang = this.thang || UI.thangMacDinh(); this.thang = thang;
+    const s = Store.settings;
+    const ds = Store.list("baocaoto", b => b.thang === thang).sort((a,b)=>(a.to||"").localeCompare(b.to||""));
+    const boChon = this.boChon || []; this.boChon = boChon;
+    const daChon = ds.filter(b => !boChon.includes(b.id));
+    const daLuu = Store.list("bienban", b => b.cap === "truong").sort((a,b)=>a.ngay<b.ngay?1:-1);
+    const dsTo = (s.dsTo||"").split("\n").map(x=>x.trim()).filter(Boolean);
+
+    el.innerHTML = `
+      <div class="card">
+        <div class="card-head"><h3>Lập biên bản họp chuyên môn toàn trường<span class="sub">Nội dung lấy từ báo cáo các tổ đã nộp · ${daChon.length}/${ds.length} tổ được đưa vào</span></h3>
+          <select id="btThang" style="width:auto">${UI.chon(UI.dsThang(), thang)}</select></div>
+        <div class="card-body">
+          ${ds.length ? `<div class="row" style="gap:6px;margin-bottom:14px">${
+            ds.map(b=>`<label class="chk" style="margin:0;width:auto"><input type="checkbox" data-bck="${b.id}" ${boChon.includes(b.id)?"":"checked"}><span><b>${U.esc(b.to)}</b></span></label>`).join("")
+          }</div>` : `<p class="note warn">Chưa có tổ nào nộp báo cáo ${U.tenThang(thang)}${dsTo.length?` (cần: ${U.esc(dsTo.join(", "))})`:""}. Biên bản vẫn lập được nhưng sẽ không có bảng số liệu.</p>`}
+
+          <div class="grid g4">
+            <label class="fld"><span>Số biên bản</span><input id="btSo" value="${daLuu.length+1}"></label>
+            <label class="fld"><span>Ngày họp</span><input type="date" id="btNgay" value="${U.today()}"></label>
+            <label class="fld"><span>Bắt đầu</span><input id="btGioBD" value="14 giờ 00 phút"></label>
+            <label class="fld"><span>Kết thúc</span><input id="btGioKT" value="16 giờ 00 phút"></label>
+            <label class="fld"><span>Chủ trì</span><input id="btChuTri" value="${U.esc(s.hieuTruong||"")}"></label>
+            <label class="fld"><span>Thư ký</span><input id="btThuKy" value="${U.esc(Auth.la("thukytruong")?Auth.me.hoTen:(s.thuKyTruong||""))}"></label>
+            <label class="fld"><span>Có mặt</span><input id="btCoMat" value="${ds.length ? ds.length + " tổ trưởng và Ban Giám hiệu" : ""}"></label>
+            <label class="fld"><span>Vắng</span><input id="btVang" value="không"></label>
+          </div>
+          <div class="grid g2">
+            <label class="fld"><span>Thành phần dự họp</span><input id="btThanhPhan" value="Ban Giám hiệu và tổ trưởng các tổ chuyên môn"></label>
+            <label class="fld"><span>Địa điểm</span><input id="btDiaDiem" value="Hội trường ${U.esc(s.truong||"")}"></label>
+          </div>
+
+          <p class="note" style="margin-top:6px">Đánh dấu nội dung đưa vào biên bản:</p>
+          <div class="grid g2">
+            ${[["chung","Tình hình chung và việc nộp báo cáo"],["quyche","Thực hiện quy chế chuyên môn, ngày giờ công"],
+               ["hoso","Hồ sơ, giáo án"],["chatluong","Chất lượng bộ môn"],["dugio","Dự giờ, thao giảng, chuyên đề"],
+               ["hsyeu","Phụ đạo học sinh chưa đạt"],["nhanxet","Tự đánh giá của các tổ"],
+               ["dexuat","Đề xuất, kiến nghị của các tổ"],["kehoach","Kế hoạch tháng tới của các tổ"]]
+              .map(([k,t])=>`<label class="chk"><input type="checkbox" data-bmuc="${k}" checked><span><b>${t}</b></span></label>`).join("")}
+          </div>
+          <div class="grid g2">
+            <label class="fld"><span>Ý kiến thảo luận tại hội nghị</span><textarea id="btYKien"></textarea></label>
+            <label class="fld"><span>Kết luận và chỉ đạo của chủ trì</span><textarea id="btKetLuan"></textarea></label>
+          </div>
+          <div class="row">
+            <button class="btn btn-primary" id="btXem">Xem trước</button>
+            <button class="btn btn-seal" id="btWord">Xuất Word</button>
+            <button class="btn btn-line" id="btLuu">Lưu vào sổ biên bản</button>
+            <span class="spacer"></span>
+            <button class="btn btn-line no-print" id="btIn">In</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card in-duoc" id="btKhung" hidden>
+        <div class="card-head"><h3>Xem trước văn bản<span class="sub">Ký Thư ký và Hiệu trưởng</span></h3></div>
+        <div class="sheet-shell"><div class="sheet" id="sheet4"></div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h3>Sổ biên bản chuyên môn toàn trường<span class="sub">${daLuu.length} biên bản</span></h3></div>
+        <div class="card-body tight">
+          ${daLuu.length ? `<div class="tbl-wrap"><table class="tbl">
+            <thead><tr><th>Số</th><th>Ngày họp</th><th>Kỳ họp</th><th>Chủ trì</th><th>Thư ký</th><th></th></tr></thead>
+            <tbody>${daLuu.map(b=>`<tr><td class="num">${U.esc(b.so)}</td><td class="nowrap">${U.dmy(b.ngay)}</td>
+              <td>${U.tenThang(b.thang)}</td><td>${U.esc(b.chuTri||"")}</td><td>${U.esc(b.thuKy||"")}</td>
+              <td class="nowrap"><button class="btn btn-sm btn-line" data-btt="${b.id}">Tải Word</button>
+              <button class="btn btn-sm btn-line" data-btx="${b.id}">Xoá</button></td></tr>`).join("")}</tbody></table></div>`
+          : UI.trong("Sổ biên bản còn trống", "")}
+        </div>
+      </div>`;
+
+    el.querySelector("#btThang").onchange = e => { this.thang = e.target.value; this.boChon = []; this.render(el); };
+    el.querySelectorAll("[data-bck]").forEach(c => c.onchange = () => {
+      this.boChon = [...el.querySelectorAll("[data-bck]")].filter(x=>!x.checked).map(x=>x.dataset.bck);
+      this.render(el);
+    });
+
+    const thu = () => {
+      const g = id => el.querySelector(id)?.value || "";
+      const bb = { cap:"truong", so:g("#btSo"), ngay:g("#btNgay"), gioBD:g("#btGioBD"), gioKT:g("#btGioKT"),
+        diaDiem:g("#btDiaDiem"), chuTri:g("#btChuTri"), thuKy:g("#btThuKy"), thanhPhan:g("#btThanhPhan"),
+        coMat:g("#btCoMat"), vangMat:g("#btVang"), thang, soTo:daChon.length, mucs:[] };
+      [...el.querySelectorAll("[data-bmuc]")].filter(c=>c.checked).forEach(c => {
+        const m = daChon.length ? TongHop.muc(c.dataset.bmuc, daChon) : null; if (m) bb.mucs.push(m);
+      });
+      if (g("#btYKien").trim())  bb.mucs.push({ tieuDe:"Ý kiến thảo luận", noiDung:g("#btYKien") });
+      if (g("#btKetLuan").trim()) bb.mucs.push({ tieuDe:"Kết luận và chỉ đạo của chủ trì", noiDung:g("#btKetLuan") });
+      return bb;
+    };
+
+    const ve = () => { el.querySelector("#btKhung").hidden = false;
+                       el.querySelector("#sheet4").innerHTML = Xuat.thanBienBanTruong(thu()); };
+    el.querySelector("#btXem").onclick = () => { ve(); el.querySelector("#btKhung").scrollIntoView({behavior:"smooth",block:"start"}); };
+    el.querySelector("#btWord").onclick = () => Xuat.bienBanTruong(thu());
+    el.querySelector("#btIn").onclick = () => { ve(); setTimeout(()=>window.print(), 200); };
+    el.querySelector("#btLuu").onclick = async () => {
+      await Store.add("bienban", thu());
+      await Store.log("Lưu biên bản chuyên môn toàn trường", U.tenThang(thang));
+      UI.toast("Đã lưu vào sổ biên bản.", "ok"); this.render(el);
+    };
+    el.querySelectorAll("[data-btt]").forEach(b => b.onclick = () => Xuat.bienBanTruong(Store.get("bienban", b.dataset.btt)));
+    el.querySelectorAll("[data-btx]").forEach(b => b.onclick = () => UI.hoi("Xoá biên bản này?", async () => {
+      await Store.del("bienban", b.dataset.btx); this.render(el);
+    }));
+  }
+};

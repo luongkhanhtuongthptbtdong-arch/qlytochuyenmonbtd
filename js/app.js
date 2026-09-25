@@ -18,7 +18,8 @@ const MENU = [
     { key:"baocaoto", ten:"Báo cáo tổ",            ic:"⌸", quyen:"xuatBaoCao" }
   ]},
   { nhom: "Toàn trường", muc: [
-    { key:"tonghop",  ten:"Tổng hợp các tổ",       ic:"◈", quyen:"hieuTruong" }
+    { key:"tonghop",       ten:"Tổng hợp các tổ",        ic:"◈", quyen:"capTruong" },
+    { key:"bienbantruong", ten:"Biên bản chuyên môn",    ic:"§", quyen:"capTruong" }
   ]},
   { nhom: "Quản trị", muc: [
     { key:"taikhoan", ten:"Tài khoản",             ic:"◍", quyen:"quanTri" },
@@ -44,6 +45,16 @@ const App = {
       App.vaoApp();
     };
 
+    if (Store.caiBaoChung()) {
+      const hint = document.querySelector(".login-hint");
+      const box = document.createElement("p");
+      box.className = "canh-bao";
+      box.innerHTML = "<b>Trang đang ở chế độ Cục bộ.</b> Dữ liệu và tài khoản chỉ nằm trên máy đã nhập, " +
+        "người khác mở đường dẫn này sẽ không đăng nhập được bằng tài khoản đã cấp. " +
+        "Quản trị đăng nhập rồi vào <b>Cài đặt → Dùng chung cho cả trường</b> để chuyển sang Firebase.";
+      hint.parentNode.insertBefore(box, hint);
+    }
+
     if (Auth.khoiPhuc()) App.vaoApp();
   },
 
@@ -68,7 +79,11 @@ const App = {
     document.getElementById("whoName").textContent = me.hoTen;
     document.getElementById("whoRole").textContent = VAI_TRO[me.role] + (me.monDay ? " · " + me.monDay : "");
     document.getElementById("pillNamHoc").textContent = "Năm học " + (s.namHoc || "—");
-    document.getElementById("pillMode").textContent = Store.mode === "firebase" ? "Dùng chung" : "Cục bộ";
+    const pm = document.getElementById("pillMode");
+    pm.textContent = Store.mode === "firebase" ? "Dùng chung" : "Cục bộ";
+    pm.title = Store.mode === "firebase" ? "Cả trường dùng chung một kho dữ liệu"
+             : "Dữ liệu chỉ nằm trên máy này";
+    pm.classList.toggle("pill-canhbao", Store.caiBaoChung());
   },
 
   veMenu(){

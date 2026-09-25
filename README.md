@@ -1,4 +1,4 @@
-# Quản lý Tổ chuyên môn
+# Quản lý Tổ chuyên môn — web tĩnh, chạy trên hosting miễn phí
 
 Toàn bộ phần mềm là HTML + CSS + JavaScript thuần, không cần máy chủ PHP hay cơ sở dữ liệu riêng.
 Chỉ cần chép nguyên thư mục lên hosting là chạy.
@@ -14,7 +14,7 @@ js/export.js          xuất Word đúng thể thức Nghị định 30/2020
 js/pages-hoso.js      tổng quan, báo cáo tháng, giáo án, dự giờ
 js/pages-chatluong.js điểm, thống kê, lọc học sinh chưa đạt
 js/pages-quantri.js   giao việc, biên bản, báo cáo tổ, tài khoản, cài đặt
-js/pages-truong.js    tổng hợp báo cáo các tổ cho hiệu trưởng
+js/pages-truong.js    tổng hợp báo cáo các tổ + biên bản họp chuyên môn toàn trường
 js/app.js             menu và điều hướng
 ```
 
@@ -60,6 +60,19 @@ service cloud.firestore {
 
 Dung lượng Firestore miễn phí là 1 GB, thừa sức cho vài chục nghìn bản ghi hồ sơ.
 
+## 2b. Chia sẻ đường dẫn cho cả trường
+
+**Chế độ `local` không chia sẻ được.** Mỗi trình duyệt giữ một kho riêng, nên người khác mở đường dẫn
+sẽ không đăng nhập được bằng tài khoản bạn đã cấp — trang đăng nhập sẽ hiện cảnh báo đỏ khi rơi vào
+tình huống này.
+
+Cách xử lý: đăng nhập bằng tài khoản quản trị → **Cài đặt → Dùng chung cho cả trường** → làm theo 4
+bước ngay trên màn hình → dán khối `firebaseConfig` → bấm **Tạo tệp config.js** → tải tệp lên hosting
+thay cho `js/config.js` cũ. Không cần tự gõ mã.
+
+Trước khi đổi, bấm **Tải bản sao (.json)** ở khung Sao lưu; sau khi chạy Firebase xong thì dùng nút
+Phục hồi để nạp lại dữ liệu đã nhập.
+
 ## 3b. Năm học và danh sách tháng
 
 Danh sách tháng ở mọi mục (báo cáo, biên bản, chuyên đề, tổng hợp) chạy từ **tháng 8 năm đầu đến
@@ -75,7 +88,8 @@ năm học mới, trước tháng 8 vẫn thuộc năm học cũ.
 | **Giáo viên** | Nộp báo cáo tháng, nộp giáo án, ghi phiếu dự giờ, nhập điểm lớp mình, xem kho giáo án đã duyệt |
 | **Thư ký** | Xem hồ sơ cả tổ, lập và xuất biên bản, xuất báo cáo tổ |
 | **Tổ trưởng** | Thêm quyền duyệt giáo án, giao việc, nộp báo cáo tổ lên trường, sửa cài đặt đơn vị |
-| **Hiệu trưởng** | Xem hồ sơ các tổ, nhận báo cáo của mọi tổ và xuất báo cáo tổng hợp toàn trường |
+| **Hiệu trưởng / Phó Hiệu trưởng** | Xem hồ sơ các tổ, nhận báo cáo của mọi tổ, xuất báo cáo tổng hợp và biên bản họp chuyên môn toàn trường |
+| **Thư ký hội đồng** | Tổng hợp báo cáo các tổ và lập, xuất biên bản họp chuyên môn toàn trường (ký Thư ký – Hiệu trưởng) |
 | **Quản trị** | Toàn quyền, cấp và khoá tài khoản |
 
 Khi cấp tài khoản nhớ điền ô **Tổ chuyên môn** — đây là căn cứ để hệ thống tách số liệu của từng tổ.
@@ -93,8 +107,10 @@ Danh sách các tổ toàn trường khai trong **Cài đặt** để hiệu tr�
 6. Thư ký vào **Biên bản họp tổ**, đánh dấu các mục cần đưa vào — số liệu tự lấy từ hồ sơ đã nộp — rồi
    xem trước và xuất Word.
 7. Tổ trưởng vào **Báo cáo tổ**: xem trước, xuất Word gửi Ban Giám hiệu, rồi bấm **Nộp lên trường**.
-8. Hiệu trưởng vào **Tổng hợp các tổ**: tích chọn các tổ, chọn những mảng cần đưa vào, xem trước và
+8. Hiệu trưởng, Phó Hiệu trưởng hoặc Thư ký hội đồng vào **Tổng hợp các tổ**: tích chọn các tổ, chọn những mảng cần đưa vào, xem trước và
    **Xuất báo cáo tổng hợp** (Word) hoặc **Xuất bảng số liệu Excel**.
+9. Sau cuộc họp chuyên môn toàn trường, thư ký hội đồng vào **Biên bản chuyên môn**: chọn tháng, chọn
+   các tổ, nhập thời gian – thành phần – ý kiến – kết luận, xuất Word (ký Thư ký và Hiệu trưởng) hoặc in.
 
 ## 5b. Hai cách đưa báo cáo tổ lên cấp trường
 

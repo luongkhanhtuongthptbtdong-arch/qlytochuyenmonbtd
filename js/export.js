@@ -168,6 +168,33 @@ ${Doc.oKy("", "", th.nguoiKy || s.hieuTruong, "Hiệu trưởng")}
     Store.log("Xuất báo cáo tổng hợp toàn trường", th.thang || "");
   },
 
+  /* ===== BIÊN BẢN HỌP CHUYÊN MÔN TOÀN TRƯỜNG (thư ký hội đồng) ===== */
+  thanBienBanTruong(bb){
+    const s = Store.settings;
+    const muc = (bb.mucs||[]).map((m,i) =>
+      `<div class="muc">${toLaMa(i+1)}. ${U.esc(m.tieuDe)}</div>${m.html || `<p>${U.esc(m.noiDung||"").replace(/\n/g,"</p><p>")}</p>`}`
+    ).join("");
+    return `
+${Doc.dauVanBan(bb.so, "BB-CM", bb.ngay)}
+<div class="tieude">Biên bản</div>
+<div class="phu-de">${U.esc(bb.tenPhien || ("Họp chuyên môn toàn trường " + U.tenThang(bb.thang)))}<br>Năm học ${U.esc(s.namHoc||"")}</div>
+<p>Thời gian: ${U.esc(bb.gioBD||"…")} ngày ${U.dmy(bb.ngay)}.</p>
+<p>Địa điểm: ${U.esc(bb.diaDiem||("Hội trường " + (s.truong||"")))}.</p>
+<p>Chủ trì: ${U.esc(bb.chuTri||s.hieuTruong||"…")} - Hiệu trưởng.</p>
+<p>Thư ký: ${U.esc(bb.thuKy||"…")}.</p>
+<p>Thành phần: ${U.esc(bb.thanhPhan||"Ban Giám hiệu và tổ trưởng các tổ chuyên môn")}. Có mặt: ${U.esc(bb.coMat||"…")}; vắng: ${U.esc(bb.vangMat||"không")}.</p>
+<p>Trên cơ sở báo cáo của ${bb.soTo||0} tổ chuyên môn, hội nghị đã nghe và thảo luận các nội dung sau:</p>
+<div class="muc">NỘI DUNG</div>
+${muc}
+<p style="margin-top:10pt">Biên bản kết thúc lúc ${U.esc(bb.gioKT||"…")} cùng ngày, đã thông qua trước hội nghị và nhất trí ${bb.tyLeNhatTri||"100"}%.</p>
+${Doc.oKy(bb.thuKy, "Thư ký", bb.chuTri||s.hieuTruong, "Hiệu trưởng")}
+`;
+  },
+  bienBanTruong(bb){
+    Doc.taiWord(`BienBan_ChuyenMon_ToanTruong_${(bb.thang||"").replace("-","_")}.doc`, "Biên bản họp chuyên môn toàn trường", Xuat.thanBienBanTruong(bb));
+    Store.log("Xuất biên bản chuyên môn toàn trường", bb.thang || "");
+  },
+
   /* ===== BẢNG THỐNG KÊ CHẤT LƯỢNG ===== */
   thongKeChatLuong(bang, meta){
     const b = MUC.bang();

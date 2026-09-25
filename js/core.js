@@ -123,6 +123,13 @@ const Store = {
     else localStorage.setItem(this.key("cauhinh"), JSON.stringify(this.settings));
   },
 
+  /* Đang chia sẻ qua mạng nhưng dữ liệu vẫn nằm trên từng máy */
+  caiBaoChung(){
+    const h = location.hostname;
+    return this.mode !== "firebase" && /^https?:/.test(location.protocol) &&
+           h !== "localhost" && h !== "127.0.0.1" && h !== "";
+  },
+
   async seed(){
     if ((this.data.users || []).length === 0) {
       await this.add("users", {
@@ -144,11 +151,13 @@ const Store = {
 
 /* ---------- Đăng nhập & phân quyền ---------- */
 const VAI_TRO = {
-  admin:      "Quản trị",
-  hieutruong: "Hiệu trưởng",
-  totruong:   "Tổ trưởng",
-  thuky:      "Thư ký",
-  giaovien:   "Giáo viên"
+  admin:          "Quản trị",
+  hieutruong:     "Hiệu trưởng",
+  phohieutruong:  "Phó Hiệu trưởng",
+  thukytruong:    "Thư ký hội đồng",
+  totruong:       "Tổ trưởng",
+  thuky:          "Thư ký tổ",
+  giaovien:       "Giáo viên"
 };
 
 const Auth = {
@@ -177,11 +186,15 @@ const Auth = {
 
   la(...roles){ return this.me && roles.includes(this.me.role); },
   quanTri(){ return this.la("admin"); },
-  duyet(){ return this.la("admin","totruong"); },                            // duyệt giáo án, hồ sơ
-  toanTo(){ return this.la("admin","hieutruong","totruong","thuky"); },       // xem dữ liệu cả tổ
-  bienBan(){ return this.la("admin","totruong","thuky"); },                   // lập & xuất biên bản
-  xuatBaoCao(){ return this.la("admin","totruong","thuky"); },
-  hieuTruong(){ return this.la("admin","hieutruong"); },                      // tổng hợp toàn trường
+  duyet(){ return this.la("admin","totruong"); },                      // duyệt giáo án, hồ sơ của tổ
+  toanTo(){ return this.la("admin","hieutruong","phohieutruong","thukytruong","totruong","thuky"); },
+  bienBan(){ return this.la("admin","totruong","thuky"); },            // biên bản họp tổ
+  xuatBaoCao(){ return this.la("admin","totruong","thuky"); },         // báo cáo của tổ
+  /* Cấp trường: tổng hợp báo cáo các tổ, lập biên bản họp chuyên môn toàn trường */
+  capTruong(){ return this.la("admin","hieutruong","phohieutruong","thukytruong"); },
+  hieuTruong(){ return this.capTruong(); },
+  /* Người đứng tên ký văn bản của trường */
+  kyTruong(){ return this.la("admin","hieutruong","phohieutruong"); },
   toCuaToi(){ return this.me?.to || Store.settings.to || ""; }
 };
 

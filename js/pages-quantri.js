@@ -108,7 +108,7 @@ Pages.bienban = {
     const thang = this.thang || UI.thangMacDinh(); this.thang = thang;
     const s = Store.settings;
     const gv = Store.list("users", u => u.active !== false);
-    const daLuu = Store.list("bienban").sort((a,b)=>a.ngay<b.ngay?1:-1);
+    const daLuu = Store.list("bienban", b => b.cap !== "truong").sort((a,b)=>a.ngay<b.ngay?1:-1);
 
     el.innerHTML = `
       <div class="card">
@@ -525,7 +525,7 @@ Pages.caidat = {
   render(el){
     const s = Store.settings;
     el.innerHTML = `
-      ${(Auth.duyet() || Auth.hieuTruong()) ? `
+      ${(Auth.duyet() || Auth.capTruong()) ? `
       <div class="card">
         <div class="card-head"><h3>Thông tin đơn vị<span class="sub">Dùng cho phần đầu của mọi văn bản xuất ra</span></h3></div>
         <div class="card-body"><form id="fS">
@@ -537,7 +537,9 @@ Pages.caidat = {
             <label class="fld"><span>Địa danh ghi trên văn bản</span><input name="diaDanh" value="${U.esc(s.diaDanh||"")}"></label>
             <label class="fld"><span>Hiệu trưởng</span><input name="hieuTruong" value="${U.esc(s.hieuTruong||"")}"></label>
             <label class="fld"><span>Tổ trưởng</span><input name="toTruong" value="${U.esc(s.toTruong||"")}"></label>
-            <label class="fld"><span>Thư ký</span><input name="thuKy" value="${U.esc(s.thuKy||"")}"></label>
+            <label class="fld"><span>Thư ký tổ</span><input name="thuKy" value="${U.esc(s.thuKy||"")}"></label>
+            <label class="fld"><span>Phó Hiệu trưởng phụ trách chuyên môn</span><input name="phoHieuTruong" value="${U.esc(s.phoHieuTruong||"")}"></label>
+            <label class="fld"><span>Thư ký hội đồng</span><input name="thuKyTruong" value="${U.esc(s.thuKyTruong||"")}"></label>
             <label class="fld"><span>Thang đánh giá</span><select name="thangDanhGia">${UI.chon([["tt22","Tốt – Khá – Đạt – Chưa đạt (TT22)"],["tt58","Giỏi – Khá – TB – Yếu – Kém"]], s.thangDanhGia||"tt22")}</select></label>
             <label class="fld"><span>Ngưỡng điểm chưa đạt</span><input type="number" step="0.1" name="nguongYeu" value="${s.nguongYeu||5}"></label>
             <label class="fld"><span>Hạn nộp báo cáo (ngày trong tháng)</span><input type="number" min="1" max="31" name="hanBaoCao" value="${s.hanBaoCao||25}"></label>
@@ -555,6 +557,26 @@ Pages.caidat = {
           <button class="btn btn-primary" type="submit">Đổi mật khẩu</button>
         </form></div>
       </div>
+
+      ${(Auth.duyet() || Auth.capTruong()) ? `
+      <div class="card">
+        <div class="card-head"><h3>Dùng chung cho cả trường<span class="sub">Bắt buộc nếu muốn chia sẻ đường dẫn cho giáo viên cùng dùng</span></h3>
+          <span class="tag ${Store.mode==="firebase"?"t-ok":"t-no"}">${Store.mode==="firebase"?"Đang dùng chung":"Đang lưu cục bộ"}</span></div>
+        <div class="card-body">
+          ${Store.mode==="firebase" ? `<p class="note">Hệ thống đang lưu trên Firestore của dự án <b>${U.esc(CFG.firebase.projectId||"")}</b>. Mọi người mở đường dẫn đều thấy chung dữ liệu và đăng nhập bằng tài khoản đã cấp.</p>`
+          : `<p class="note warn">Hiện mỗi máy giữ một kho dữ liệu riêng, nên người khác mở đường dẫn sẽ không đăng nhập được bằng tài khoản bạn đã cấp. Làm 4 bước sau một lần duy nhất:</p>
+          <ol style="font-size:13.5px;line-height:1.7;padding-left:20px;margin:0 0 14px">
+            <li>Vào <b>console.firebase.google.com</b> → <i>Add project</i> (gói Spark miễn phí).</li>
+            <li>Vào <b>Build → Firestore Database → Create database</b>, chọn vùng <i>asia-southeast1 (Singapore)</i>, chế độ <i>test mode</i>.</li>
+            <li>Vào <b>Project settings → Your apps → Web &lt;/&gt;</b>, sao chép cả khối <code>firebaseConfig</code> rồi dán vào ô dưới.</li>
+            <li>Bấm <b>Tạo tệp config.js</b>, tải về và thay tệp <code>js/config.js</code> trên hosting.</li>
+          </ol>
+          <label class="fld"><span>Dán khối firebaseConfig lấy từ Firebase</span>
+            <textarea id="fbPaste" style="min-height:130px;font-family:'IBM Plex Mono',monospace;font-size:12.5px" placeholder='const firebaseConfig = {\n  apiKey: "AIza...",\n  authDomain: "ten-du-an.firebaseapp.com",\n  projectId: "ten-du-an",\n  storageBucket: "...",\n  messagingSenderId: "...",\n  appId: "1:..."\n};'></textarea></label>
+          <button class="btn btn-primary" id="btnTaoCfg">Tạo tệp config.js</button>
+          <p class="note" style="margin-top:14px">Dữ liệu đã nhập ở chế độ cục bộ không tự chuyển sang. Trước khi đổi, hãy bấm <b>Tải bản sao (.json)</b> ở khung dưới; sau khi chuyển xong thì dùng nút Phục hồi để nạp lại.</p>`}
+        </div>
+      </div>` : ""}
 
       <div class="card">
         <div class="card-head"><h3>Sao lưu dữ liệu<span class="sub">Nên tải bản sao vào cuối mỗi học kỳ để lưu trữ theo năm học</span></h3></div>
@@ -582,6 +604,50 @@ Pages.caidat = {
       Auth.me.passHash = await U.hash(Auth.me.username, f.moi);
       await Store.put("users", Auth.me);
       UI.toast("Đã đổi mật khẩu.", "ok"); ev.target.reset();
+    };
+
+    const btnCfg = el.querySelector("#btnTaoCfg");
+    if (btnCfg) btnCfg.onclick = () => {
+      const txt = el.querySelector("#fbPaste").value;
+      const lay = k => (txt.match(new RegExp(k + '\\s*:\\s*["\'`]([^"\'`]+)')) || [])[1] || "";
+      const c = { apiKey:lay("apiKey"), authDomain:lay("authDomain"), projectId:lay("projectId"),
+                  storageBucket:lay("storageBucket"), messagingSenderId:lay("messagingSenderId"), appId:lay("appId") };
+      if (!c.apiKey || !c.projectId) { UI.toast("Chưa đọc được apiKey và projectId — hãy dán đúng khối firebaseConfig.", "err"); return; }
+      const d = Store.settings;
+      const noiDung = `/* Cấu hình — tạo tự động ngày ${U.dmy(U.today())} */
+window.APP_CONFIG = {
+  mode: "firebase",
+
+  firebase: {
+    apiKey: "${c.apiKey}",
+    authDomain: "${c.authDomain}",
+    projectId: "${c.projectId}",
+    storageBucket: "${c.storageBucket}",
+    messagingSenderId: "${c.messagingSenderId}",
+    appId: "${c.appId}"
+  },
+
+  prefix: "${CFG.prefix}",
+
+  defaults: {
+    so: "${(d.so||"").replace(/"/g,"")}",
+    truong: "${(d.truong||"").replace(/"/g,"")}",
+    to: "${(d.to||"").replace(/"/g,"")}",
+    namHoc: "${d.namHoc||""}",
+    diaDanh: "${(d.diaDanh||"").replace(/"/g,"")}",
+    hieuTruong: "${(d.hieuTruong||"").replace(/"/g,"")}",
+    toTruong: "${(d.toTruong||"").replace(/"/g,"")}",
+    thuKy: "${(d.thuKy||"").replace(/"/g,"")}",
+    nguongYeu: ${Number(d.nguongYeu)||5},
+    hanBaoCao: ${Number(d.hanBaoCao)||25},
+    hanGiaoAn: ${Number(d.hanGiaoAn)||5}
+  }
+};
+`;
+      U.tai("config.js", noiDung, "text/javascript;charset=utf-8");
+      UI.modal("Việc còn lại", `<p style="margin-top:0">Đã tải tệp <b>config.js</b>. Hãy tải tệp này lên hosting, thay cho tệp <b>js/config.js</b> cũ, rồi mọi người nhấn Ctrl+F5.</p>
+        <p>Lần đầu vào bằng Firebase, hệ thống tạo lại tài khoản <b>admin / admin@123</b> — đăng nhập rồi đổi mật khẩu và cấp lại tài khoản cho giáo viên, hoặc dùng nút Phục hồi để nạp bản sao .json đã tải.</p>
+        <p>Khi đã chạy ổn, vào Firestore → tab <b>Rules</b> đổi ngày hết hạn của chế độ test để dữ liệu không bị khoá sau 30 ngày.</p>`);
     };
 
     el.querySelector("#btnLuu").onclick = () => {
