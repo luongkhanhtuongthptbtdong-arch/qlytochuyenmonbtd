@@ -1,27 +1,22 @@
 /* =========================================================
-   CẤU HÌNH — sửa tệp này trước khi đưa lên hosting
+   CẤU HÌNH — dự án Firebase: qlytochuyenmonbtd
+   Đặt tệp này vào thư mục js/ trên hosting, thay tệp cũ.
    ========================================================= */
 window.APP_CONFIG = {
 
-  /* Chế độ lưu dữ liệu:
-     "local"    – lưu ngay trong trình duyệt của máy đang dùng.
-                  Chạy được ngay, không cần đăng ký gì. Dùng để thử
-                  hoặc khi chỉ một người nhập liệu.
-     "firebase" – lưu trên Firestore, mọi giáo viên dùng chung dữ liệu.
-                  Điền khối firebase bên dưới rồi đổi thành "firebase". */
-  mode: "local",
+  /* "firebase" = cả trường dùng chung một kho dữ liệu */
+  mode: "firebase",
 
   firebase: {
-    apiKey: "",
-    authDomain: "",
-    projectId: "",
-    storageBucket: "",
-    messagingSenderId: "",
-    appId: ""
+    apiKey: "AIzaSyCyvbYK5tjM2lHV-ccf_IR6PDj1Ch3IteU",
+    authDomain: "qlytochuyenmonbtd.firebaseapp.com",
+    projectId: "qlytochuyenmonbtd",
+    storageBucket: "qlytochuyenmonbtd.firebasestorage.app",
+    messagingSenderId: "1004814390389",
+    appId: "1:1004814390389:web:edbd6d0b05d0aa921c143c"
   },
 
-  /* Tiền tố tên bộ sưu tập trên Firestore — đổi nếu một dự án Firebase
-     dùng cho nhiều tổ (vd: "toan_", "ly_"). */
+  /* Tiền tố tên bộ sưu tập trên Firestore */
   prefix: "tcm_",
 
   /* Thông tin mặc định, sau khi đăng nhập vào Cài đặt sửa lại cho đúng */
@@ -35,7 +30,7 @@ window.APP_CONFIG = {
     toTruong: "",
     thuKy: "",
     nguongYeu: 5.0,
-    hanBaoCao: 25,       // ngày hằng tháng phải nộp báo cáo
-    hanGiaoAn: 5         // nộp giáo án trước tiết dạy bao nhiêu ngày
+    hanBaoCao: 25,
+    hanGiaoAn: 5
   }
 };
