@@ -1,4 +1,4 @@
-# Quản lý Tổ chuyên môn — web tĩnh, chạy trên hosting miễn phí
+# Quản lý Tổ chuyên môn
 
 ## 1. Năm học và danh sách tháng
 
