@@ -169,7 +169,7 @@ Pages.tonghop = {
   eyebrow: "Toàn trường", title: "Tổng hợp báo cáo các tổ",
   render(el){
     if (!Auth.hieuTruong()) { el.innerHTML = UI.trong("Mục này dành cho hiệu trưởng", "Liên hệ quản trị nếu bạn cần quyền xem."); return; }
-    const thang = this.thang || U.thangHienTai(); this.thang = thang;
+    const thang = this.thang || UI.thangMacDinh(); this.thang = thang;
     const ds = Store.list("baocaoto", b => b.thang === thang).sort((a,b)=>(a.to||"").localeCompare(b.to||""));
     const boChon = this.boChon || [];              /* tổ bị bỏ tích, mặc định gộp hết */
     this.boChon = boChon;

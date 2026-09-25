@@ -50,7 +50,7 @@ Pages.congviec = {
         <div class="card-body"><form id="fCD">
           <div class="grid g3">
             <label class="fld"><span>Tên chuyên đề</span><input name="tieuDe" required></label>
-            <label class="fld"><span>Tháng báo cáo</span><select name="thang">${UI.chon(UI.dsThang())}</select></label>
+            <label class="fld"><span>Tháng báo cáo</span><select name="thang">${UI.chon(UI.dsThang(), UI.thangMacDinh())}</select></label>
             <label class="fld"><span>&nbsp;</span><button class="btn btn-primary" type="submit">Đăng ký</button></label>
           </div>
         </form>
@@ -105,7 +105,7 @@ Pages.bienban = {
   eyebrow: "Văn bản của tổ", title: "Biên bản họp tổ",
   render(el){
     if (!Auth.bienBan()) { el.innerHTML = UI.trong("Chỉ tổ trưởng và thư ký được lập biên bản", "Liên hệ tổ trưởng nếu bạn cần quyền này."); return; }
-    const thang = this.thang || U.thangHienTai(); this.thang = thang;
+    const thang = this.thang || UI.thangMacDinh(); this.thang = thang;
     const s = Store.settings;
     const gv = Store.list("users", u => u.active !== false);
     const daLuu = Store.list("bienban").sort((a,b)=>a.ngay<b.ngay?1:-1);
@@ -288,7 +288,7 @@ Pages.baocaoto = {
   eyebrow: "Văn bản của tổ", title: "Báo cáo tổ chuyên môn",
   render(el){
     if (!Auth.xuatBaoCao()) { el.innerHTML = UI.trong("Chỉ tổ trưởng và thư ký được xuất báo cáo tổ", ""); return; }
-    const thang = this.thang || U.thangHienTai(); this.thang = thang;
+    const thang = this.thang || UI.thangMacDinh(); this.thang = thang;
     const to = Auth.toCuaToi();
     const daNop = Store.list("baocaoto", b => b.to === to).sort((a,b)=>a.thang<b.thang?1:-1);
     const nopThangNay = daNop.find(b => b.thang === thang);
@@ -533,7 +533,7 @@ Pages.caidat = {
             <label class="fld"><span>Cơ quan chủ quản</span><input name="so" value="${U.esc(s.so||"")}"></label>
             <label class="fld"><span>Tên trường</span><input name="truong" value="${U.esc(s.truong||"")}"></label>
             <label class="fld"><span>Tên tổ</span><input name="to" value="${U.esc(s.to||"")}"></label>
-            <label class="fld"><span>Năm học</span><select name="namHoc">${UI.chon(UI.dsNamHoc(), s.namHoc)}</select></label>
+            <label class="fld"><span>Năm học <i style="font-weight:400;color:#7A8AA0">(quyết định danh sách tháng)</i></span><select name="namHoc">${UI.chon(UI.dsNamHoc(), s.namHoc)}</select></label>
             <label class="fld"><span>Địa danh ghi trên văn bản</span><input name="diaDanh" value="${U.esc(s.diaDanh||"")}"></label>
             <label class="fld"><span>Hiệu trưởng</span><input name="hieuTruong" value="${U.esc(s.hieuTruong||"")}"></label>
             <label class="fld"><span>Tổ trưởng</span><input name="toTruong" value="${U.esc(s.toTruong||"")}"></label>

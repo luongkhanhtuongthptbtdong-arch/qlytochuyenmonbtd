@@ -13,6 +13,11 @@ const U = {
   dmy(iso){ if(!iso) return ""; const d=new Date(iso); return isNaN(d)?iso:`${String(d.getDate()).padStart(2,"0")}/${String(d.getMonth()+1).padStart(2,"0")}/${d.getFullYear()}`; },
   dmyGio(iso){ if(!iso) return ""; const d=new Date(iso); return isNaN(d)?iso:`${U.dmy(iso)} ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`; },
   thangHienTai(){ const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`; },
+  /* Năm học bắt đầu từ tháng 8: trước tháng 8 vẫn thuộc năm học trước */
+  namBatDau(){ const d=new Date(); return d.getMonth()+1 >= 8 ? d.getFullYear() : d.getFullYear()-1; },
+  namHocHienTai(){ const b=U.namBatDau(); return `${b} - ${b+1}`; },
+  /* Lấy năm bắt đầu ghi trong chuỗi năm học, vd "2026 - 2027" → 2026 */
+  namCuaNamHoc(nh){ const m=String(nh||"").match(/(\d{4})/); return m ? Number(m[1]) : U.namBatDau(); },
   tenThang(ym){ if(!ym) return ""; const [y,m]=ym.split("-"); return `tháng ${Number(m)} năm ${y}`; },
   so(v, n=2){ const x=Number(v); return isFinite(x) ? x.toFixed(n).replace(/\.?0+$/,"") : ""; },
   tyle(a,b){ return b ? (a*100/b) : 0; },
@@ -79,6 +84,7 @@ const Store = {
       catch { this.settings = {}; }
     }
     this.settings = Object.assign({}, CFG.defaults, this.settings);
+    if (!this.settings.namHoc) this.settings.namHoc = U.namHocHienTai();
   },
 
   saveLocal(c){ localStorage.setItem(this.key(c), JSON.stringify(this.data[c] || [])); },
@@ -225,19 +231,27 @@ const UI = {
     }).join("");
   },
 
-  /* Danh sách năm học gợi ý */
+  /* Danh sách năm học gợi ý, luôn có sẵn năm học đang cài đặt */
   dsNamHoc(){
-    const y = new Date().getFullYear(), r = [];
-    for (let i = -2; i <= 1; i++) r.push(`${y+i} - ${y+i+1}`);
+    const b = U.namBatDau(), r = [];
+    for (let i = -2; i <= 1; i++) r.push(`${b+i} - ${b+i+1}`);
+    const nh = Store.settings.namHoc;
+    if (nh && !r.includes(nh)) r.unshift(nh);
     return r;
   },
+  /* 12 tháng của năm học đang cài đặt: tháng 8 năm trước → tháng 7 năm sau */
   dsThang(){
-    const r = [], d = new Date();
-    for (let i = 11; i >= -1; i--) {
-      const t = new Date(d.getFullYear(), d.getMonth() - i, 1);
-      r.push([`${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,"0")}`, `Tháng ${t.getMonth()+1}/${t.getFullYear()}`]);
+    const y = U.namCuaNamHoc(Store.settings.namHoc), r = [];
+    for (let i = 8; i <= 19; i++) {
+      const nam = i <= 12 ? y : y + 1, th = i <= 12 ? i : i - 12;
+      r.push([`${nam}-${String(th).padStart(2,"0")}`, `Tháng ${th}/${nam}`]);
     }
     return r;
+  },
+  /* Tháng mặc định: tháng hiện tại nếu còn trong năm học, nếu không thì tháng 8 */
+  thangMacDinh(){
+    const ds = UI.dsThang().map(x => x[0]), t = U.thangHienTai();
+    return ds.includes(t) ? t : ds[0];
   }
 };
 

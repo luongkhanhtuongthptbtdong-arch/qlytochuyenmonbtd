@@ -28,7 +28,7 @@ function moLink(link, nhan){
 Pages.tongquan = {
   eyebrow: "Hồ sơ chuyên môn", title: "Tổng quan",
   render(el){
-    const me = Auth.me, thang = U.thangHienTai(), s = Store.settings;
+    const me = Auth.me, thang = UI.thangMacDinh(), s = Store.settings;
     const gv = Store.list("users", u => u.active !== false);
     const bcThang = Store.list("baocao", b => b.thang === thang);
     const gaCho = Store.list("giaoan", g => g.trangThai === "cho");
@@ -104,7 +104,7 @@ Pages.tongquan = {
 Pages.baocao = {
   eyebrow: "Hồ sơ chuyên môn", title: "Báo cáo công tác tháng",
   render(el){
-    const thang = this.thang || U.thangHienTai();
+    const thang = this.thang || UI.thangMacDinh();
     this.thang = thang;
     const cuaToi = Store.list("baocao").find(b => b.uid === Auth.me.id && b.thang === thang);
     const caTo = Store.list("baocao", b => b.thang === thang);

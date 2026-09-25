@@ -29,7 +29,7 @@ window.APP_CONFIG = {
     so: "SỞ GIÁO DỤC VÀ ĐÀO TẠO AN GIANG",
     truong: "TRƯỜNG THPT BÌNH THẠNH ĐÔNG",
     to: "TỔ TOÁN",
-    namHoc: "2026 - 2027",
+    namHoc: "",            // để trống thì phần mềm tự tính theo ngày hệ thống
     diaDanh: "An Giang",
     hieuTruong: "",
     toTruong: "",

@@ -60,6 +60,14 @@ service cloud.firestore {
 
 Dung lượng Firestore miễn phí là 1 GB, thừa sức cho vài chục nghìn bản ghi hồ sơ.
 
+## 3b. Năm học và danh sách tháng
+
+Danh sách tháng ở mọi mục (báo cáo, biên bản, chuyên đề, tổng hợp) chạy từ **tháng 8 năm đầu đến
+tháng 7 năm sau** của năm học đang đặt trong **Cài đặt**. Đặt sai năm học thì các ô chọn tháng sẽ lệch.
+
+Để trống `namHoc` trong `js/config.js` thì phần mềm tự tính theo ngày máy: từ tháng 8 trở đi tính là
+năm học mới, trước tháng 8 vẫn thuộc năm học cũ.
+
 ## 4. Vai trò và quyền
 
 | Vai trò | Được làm |
