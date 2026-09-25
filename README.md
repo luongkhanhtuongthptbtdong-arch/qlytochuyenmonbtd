@@ -1,4 +1,4 @@
-# Quản lý Tổ chuyên môn — web tĩnh, chạy trên hosting miễn phí
+# Quản lý Tổ chuyên môn
 
 Toàn bộ phần mềm là HTML + CSS + JavaScript thuần, không cần máy chủ PHP hay cơ sở dữ liệu riêng.
 Chỉ cần chép nguyên thư mục lên hosting là chạy.
