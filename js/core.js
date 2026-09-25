@@ -51,18 +51,40 @@ const Store = {
   data: {},
   settings: {},
 
+  loi: null,      // mô tả sự cố kết nối, hiện lên màn hình đăng nhập
+
   async init(){
-    if (this.mode === "firebase" && CFG.firebase && CFG.firebase.projectId) {
-      try {
-        firebase.initializeApp(CFG.firebase);
-        this.fs = firebase.firestore();
-      } catch(e){
-        console.error(e); this.mode = "local";
-        UI.toast("Không kết nối được Firebase, tạm dùng dữ liệu trên máy.", "err");
+    if (this.mode === "firebase") {
+      if (typeof firebase === "undefined") {
+        this.loi = "Không tải được thư viện Firebase. Máy đang mất mạng hoặc bị chặn — kiểm tra kết nối rồi tải lại trang.";
+      } else if (!CFG.firebase || !CFG.firebase.projectId) {
+        this.loi = "Tệp js/config.js chưa có projectId. Hãy tải lại đúng tệp config.js do phần mềm tạo ra.";
+      } else {
+        try {
+          firebase.initializeApp(CFG.firebase);
+          this.fs = firebase.firestore();
+        } catch(e){ this.loi = "Không khởi tạo được Firebase: " + (e.message || e); }
       }
-    } else { this.mode = "local"; }
-    await this.load();
-    await this.seed();
+    }
+    if (this.loi) { this.mode = "local"; this.fs = null; }
+
+    try {
+      await this.load();
+    } catch(e){
+      console.error(e);
+      const m = String(e && (e.code || e.message) || e);
+      this.loi = /permission|insufficient/i.test(m)
+        ? "Firestore từ chối truy cập (permission denied). Vào Firestore → tab Rules, dán lại đoạn cho phép read, write rồi bấm Publish."
+        : /offline|unavailable|network/i.test(m)
+        ? "Không liên lạc được với Firestore. Kiểm tra mạng, hoặc dự án đã bị xoá / chưa tạo cơ sở dữ liệu."
+        : /not-found|NOT_FOUND/i.test(m)
+        ? "Không tìm thấy cơ sở dữ liệu của dự án. Vào Firebase → Build → Firestore Database → Create database."
+        : "Không đọc được dữ liệu: " + m;
+      this.mode = "local"; this.fs = null;
+      try { await this.load(); } catch { for (const c of COLLS) this.data[c] = this.data[c] || []; }
+    }
+
+    try { await this.seed(); } catch(e){ console.error(e); }
   },
 
   key(c){ return CFG.prefix + c; },

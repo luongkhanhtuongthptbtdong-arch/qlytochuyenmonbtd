@@ -31,7 +31,8 @@ const App = {
   trang: "tongquan",
 
   async khoiDong(){
-    await Store.init();
+    try { await Store.init(); }
+    catch(e){ console.error(e); Store.loi = Store.loi || ("Lỗi khởi động: " + (e.message||e)); }
     const s = Store.settings;
     document.getElementById("loginSchool").textContent = `${s.to || ""} · ${s.truong || ""}`;
     document.title = `Quản lý ${s.to || "tổ chuyên môn"}`;
@@ -45,7 +46,16 @@ const App = {
       App.vaoApp();
     };
 
-    if (Store.caiBaoChung()) {
+    if (Store.loi) {
+      const hint = document.querySelector(".login-hint");
+      const box = document.createElement("p");
+      box.className = "canh-bao";
+      box.innerHTML = "<b>Chưa kết nối được kho dữ liệu chung.</b><br>" + Store.loi +
+        "<br>Hệ thống tạm chạy bằng dữ liệu trên máy này.";
+      hint.parentNode.insertBefore(box, hint);
+    }
+
+    if (!Store.loi && Store.caiBaoChung()) {
       const hint = document.querySelector(".login-hint");
       const box = document.createElement("p");
       box.className = "canh-bao";
@@ -65,6 +75,13 @@ const App = {
     App.veMenu();
     document.getElementById("btnLogout").onclick = () => UI.hoi("Đăng xuất khỏi hệ thống?", () => Auth.logout());
     document.getElementById("btnMenu").onclick = () => App.menuDiDong(true);
+    document.getElementById("btnTaiLai").onclick = async (e) => {
+      const b = e.currentTarget; b.disabled = true; b.style.opacity = .4;
+      try { await Store.load(); Auth.me = Store.get("users", Auth.me.id) || Auth.me; App.nhan(); App.di(App.trang);
+            UI.toast("Đã tải dữ liệu mới nhất.", "ok"); }
+      catch { UI.toast("Không tải được dữ liệu.", "err"); }
+      b.disabled = false; b.style.opacity = 1;
+    };
     document.getElementById("scrim").onclick = () => App.menuDiDong(false);
     document.getElementById("modalClose").onclick = () => UI.dongModal();
     document.getElementById("modalWrap").onclick = e => { if (e.target.id === "modalWrap") UI.dongModal(); };
